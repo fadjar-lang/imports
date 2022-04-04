@@ -70,16 +70,45 @@ if (isset($_GET['select'])) {
         </div>
 
         <h1>Coba select</h1>
-       <?php 
-       while($row = mysqli_fetch_array($hasil_select)){
-         echo $row['bfre'];
-         echo '<br>';
-         echo $row['aftr'];
-         echo '<br>';
-         echo $row['judgement'];
-         echo '<br>';
-       }
-       ?>
+        <?php 
+        $query = mysqli_query($con, "SELECT judgement FROM tbdata WHERE target_model='A'");
+        //echo array_count_values(mysqli_fetch_array());
+        $array = [];
+
+        $i =0;
+
+        
+        while ($row = mysqli_fetch_array($query)) {
+
+            $data = $row['judgement'];
+            $spliter = ',';
+            $dt = $data && $spliter;
+            $array[$i]=$data;
+
+          $i++;
+        }
+       //print_r (implode(',', mysqli_fetch_array($query)));
+       echo "'".(implode('\',\'',$array))."'";
+       echo '<br>';
+        //print_r($array);
+        ?>
+
+        <?php
+          $arrays = [];
+          $querys = mysqli_query($con, "SELECT judgement FROM tbdata WHERE target_model='A'");
+          while ($row = mysqli_fetch_array($querys)) {
+            echo $values = $row['judgement'];
+            $arrays[$i]=$values;
+            $i++;
+          }
+          print_r(array_count_values($arrays));
+
+          foreach (array_count_values($arrays) as $judgement) {
+            echo $judgement;
+            echo '<br>';
+          }
+        ?>
+     
 
       </div><!-- /.container-fluid -->
 
@@ -119,18 +148,32 @@ const myChart = new Chart(ctx, {
               <?php 
                  //$query = "SELECT bfre FROM tbdata WHERE target_model='$select'";
                  $wow = mysqli_query($con, "SELECT bfre FROM tbdata WHERE target_model='$select'");
+                 $tmp_bfr = "";
                  while ($row = mysqli_fetch_array($wow)) {
-                   echo $row['bfre'];
-               
+                  if ($tmp_bfr > 0) {
+                    $tmp_bfr = $tmp_bfr + $row['bfre'];          
+                  } else {
+                    $tmp_bfr = $row['bfre'];
+                    // echo $tmp_bfr;
+                  }
+                   
                  }
+                 echo $tmp_bfr;
                 ?>
-             ,  <?php 
-                 $query = "SELECT aftr FROM tbdata WHERE target_model='$select'";
-                 $wow = mysqli_query($con, $query);
+             ,   <?php 
+                 //$query = "SELECT bfre FROM tbdata WHERE target_model='$select'";
+                 $wow = mysqli_query($con, "SELECT aftr FROM tbdata WHERE target_model='$select'");
+                 $tmp_aftr = "";
                  while ($row = mysqli_fetch_array($wow)) {
-                   echo $row['aftr'];
-                  
+                  if ($tmp_aftr > 0) {
+                    $tmp_aftr = $tmp_aftr + $row['aftr'];          
+                  } else {
+                    $tmp_aftr = $row['aftr'];
+                    // echo $tmp_bfr;
+                  }
+                   
                  }
+                 echo $tmp_aftr;
                 ?>],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
@@ -157,14 +200,49 @@ const ctxs = document.getElementById('myChartPie').getContext('2d');
 const myChartPie = new Chart(ctxs, {
     type: 'pie',
     data: {
-        labels: ['A1', 'A2', 'B1', 'B2', 'NG', 'C', 'PENDING'],
+      <?php 
+       
+        ?>
+        labels: [<?php 
+        $query = mysqli_query($con, "SELECT DISTINCT judgement FROM tbdata WHERE target_model='$select'");
+        //echo array_count_values(mysqli_fetch_array());
+        $array = [];
+
+        $i =0;
+
+        
+        while ($row = mysqli_fetch_array($query)) {
+
+            $data = $row['judgement'];
+            $array[$i]=$data;
+
+          $i++;
+        }
+       // print_r (implode(',', mysqli_fetch_array($query)));
+       echo "'".(implode('\',\'',$array))."'";
+        //print_r($array);
+        ?>],
         datasets: [{
             label: '# of Votes',
-            data: [12, 19, 
+            data: [<?php
+          $arrayss = [];
+          $querys = mysqli_query($con, "SELECT judgement FROM tbdata WHERE target_model='$select'");
+          while ($row = mysqli_fetch_array($querys)) {
+            //echo $values = $row['judgement'];
+            $arrayss[$i]=$values;
             
-            <?php $b1 = mysqli_query($con, "SELECT judgement='B1' FROM tbdata WHERE target_model='$select'");
-                  echo mysqli_num_rows($b1);
-            ?>, 5, 2, 3, 3],
+            $i++;
+          }
+          //print_r(array_count_values($arrays));
+          $array_baru = [];
+          foreach (array_count_values($arrays) as $judgement) {
+            $array_baru[$i]=$judgement;
+            $i++;
+            //echo $judgement;
+            //echo '<br>';
+          }
+          echo implode(',',$array_baru);
+        ?>],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',

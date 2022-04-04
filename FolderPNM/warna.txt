@@ -1,0 +1,5 @@
+navbar #000000
+warna dasar #1a1b1f
+warna button #23b2f4
+warna footer atas #232a3a
+warna footer #232a3a

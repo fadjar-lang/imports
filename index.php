@@ -4,7 +4,7 @@ if (isset($_GET['select'])) {
   $query = "SELECT bfre,aftr,judgement FROM tbdata WHERE target_model='$select'";
   $hasil_select = mysqli_query($con, $query);
 }else{
-  $hasil_select = mysqli_query($con,"SELECT * FROM tbdata");
+  $select = "A";
 }
 ?>
 <!DOCTYPE html>
@@ -39,6 +39,16 @@ if (isset($_GET['select'])) {
         <div class="row mb-2">
           <div class="col-sm-6">
             <h1 class="m-0">Database VA VE</h1>
+            <center>
+              <h1 class="m-0">Target Model <?php 
+              if(isset($_GET['select'])){
+                echo $_GET['select'];
+              }else{
+                echo 'A';
+              }
+              
+              ?></h1>
+            </center>
           </div><!-- /.col -->
          
         </div><!-- /.row -->
@@ -51,27 +61,32 @@ if (isset($_GET['select'])) {
       <div class="container-fluid">
         <!-- Small boxes (Stat box) -->
         <div class="row">
-          <div class="col-md-6">
-            <form action="index.php" method="get">
+          <div class="col-md-5">
+            <form action="index.php" method="get" class="d-flex">
               <select name="select" class="form-control">
+                <option value="">Select your Model</option>
                 <option value="A">A</option>
                 <option value="B">B</option>
                 <option value="C">C</option>
                 <option value="D">D</option>
                 <option value="NG">NG</option>
               </select>
-              <button type="submit" class="btn btn-primary">Select</button>
+              <button type="submit" class="btn btn-primary ml-2">Select</button>
             </form>
-            <canvas id="myChartPie" width="100" height="100"></canvas>
+            <div class="mt-5">   
+              <canvas id="myChartPie" width="100" height="100"></canvas>
+            </div>
+          </div>
+          <br><br><br><br>
+          <div class="col-md-5 mt-5 ml-5 p-4">
+            <canvas id="myChart" width="100" height="100"></canvas>
           </div>
         </div>
-        <div class="col-md-6 mt-5">
-          <canvas id="myChart" width="100" height="100"></canvas>
-        </div>
+      
 
-        <h1>Coba select</h1>
+        <!-- <h1>Coba select</h1> -->
         <?php 
-        $query = mysqli_query($con, "SELECT judgement FROM tbdata WHERE target_model='A'");
+        $query = mysqli_query($con, "SELECT judgement FROM tbdata WHERE target_model='$select'");
         //echo array_count_values(mysqli_fetch_array());
         $array = [];
 
@@ -88,24 +103,24 @@ if (isset($_GET['select'])) {
           $i++;
         }
        //print_r (implode(',', mysqli_fetch_array($query)));
-       echo "'".(implode('\',\'',$array))."'";
-       echo '<br>';
+       //echo "'".(implode('\',\'',$array))."'";
+       //echo '<br>';
         //print_r($array);
         ?>
 
         <?php
           $arrays = [];
-          $querys = mysqli_query($con, "SELECT judgement FROM tbdata WHERE target_model='A'");
+          $querys = mysqli_query($con, "SELECT judgement FROM tbdata WHERE target_model='$select'");
           while ($row = mysqli_fetch_array($querys)) {
-            echo $values = $row['judgement'];
+           $values = $row['judgement'];
             $arrays[$i]=$values;
             $i++;
           }
-          print_r(array_count_values($arrays));
+          //print_r(array_count_values($arrays));
 
           foreach (array_count_values($arrays) as $judgement) {
-            echo $judgement;
-            echo '<br>';
+            //echo $judgement;
+            //echo '<br>';
           }
         ?>
      
@@ -135,15 +150,17 @@ if (isset($_GET['select'])) {
 <!-- jQuery -->
 <script src="plugins/jquery/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/chart.js-plugin-labels-dv/dist/chartjs-plugin-labels.min.js"></script>
 <script>
   
 const ctx = document.getElementById('myChart').getContext('2d');
 const myChart = new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: ['Cost Before', 'Cost After'],
-        datasets: [{
-            label: '# of Votes',
+        labels: [''],
+        datasets: [
+          {
+            label: 'Cost Before',
             data: [
               <?php 
                  //$query = "SELECT bfre FROM tbdata WHERE target_model='$select'";
@@ -159,8 +176,20 @@ const myChart = new Chart(ctx, {
                    
                  }
                  echo $tmp_bfr;
-                ?>
-             ,   <?php 
+                ?>,
+
+             ],
+             backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                
+            ],
+          },
+
+
+            {
+              label: 'Cost After',
+              data: [
+                <?php 
                  //$query = "SELECT bfre FROM tbdata WHERE target_model='$select'";
                  $wow = mysqli_query($con, "SELECT aftr FROM tbdata WHERE target_model='$select'");
                  $tmp_aftr = "";
@@ -174,23 +203,26 @@ const myChart = new Chart(ctx, {
                    
                  }
                  echo $tmp_aftr;
-                ?>],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)'
-            ],
-            borderWidth: 1
-        }]
+                ?>,
+              ],
+              backgroundColor: [
+                
+                'rgba(54, 162, 235, 0.2)',
+            ]
+          }
+
+        ]
     },
     options: {
         scales: {
             y: {
                 beginAtZero: true
             }
+        },
+        plugins: {
+          labels: {
+            render: 'value'
+          }
         }
     }
 });
@@ -198,7 +230,7 @@ const myChart = new Chart(ctx, {
 // pie chart
 const ctxs = document.getElementById('myChartPie').getContext('2d');
 const myChartPie = new Chart(ctxs, {
-    type: 'pie',
+    type: 'doughnut',
     data: {
       <?php 
        
@@ -269,11 +301,12 @@ const myChartPie = new Chart(ctxs, {
         
     },
     options: {
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
+      radius:'80%',
+        // scales: {
+        //     y: {
+        //         beginAtZero: true
+        //     }
+        // }
     }
 });
 

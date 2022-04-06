@@ -60,17 +60,29 @@ if (isset($_GET['select'])) {
     <section class="content">
       <div class="container-fluid">
         <!-- Small boxes (Stat box) -->
+       
         <div class="row">
           <div class="col-md-5">
             <form action="index.php" method="get" class="d-flex">
-              <select name="select" class="form-control">
-                <option value="">Select your Model</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-                <option value="NG">NG</option>
-              </select>
+           
+          <select name="select" class="form-control">
+            <option value="">--- Select your Model ---</option>
+            <?php 
+        $query_model = mysqli_query($con, "SELECT DISTINCT target_model FROM tbdata ORDER BY target_model ASC");
+        while ($models = mysqli_fetch_array($query_model)) {
+        ?>
+           
+            <?php 
+            if ($select == $models['target_model']) {
+              echo "<option selected='selected' value='$models[target_model]'>$models[target_model]</option>";
+            }else{
+              echo "<option value='$models[target_model]'>$models[target_model]</option>";
+            }
+            
+            ?>
+          
+            <?php }?>
+          </select>
               <button type="submit" class="btn btn-primary ml-2">Select</button>
             </form>
             <div class="mt-5">   

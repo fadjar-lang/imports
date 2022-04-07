@@ -161,8 +161,8 @@ if (isset($_GET['select'])) {
 
 <!-- jQuery -->
 <script src="plugins/jquery/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://unpkg.com/chart.js-plugin-labels-dv/dist/chartjs-plugin-labels.min.js"></script>
+<script src="chart.js"></script>
+<script src="chartjs-plugin-labels.min.js"></script>
 <script>
   
 const ctx = document.getElementById('myChart').getContext('2d');
